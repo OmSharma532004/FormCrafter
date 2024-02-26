@@ -4,7 +4,7 @@ import Link from "next/link";
 import { UserProvider, useUserContext } from "@/lib/contextapi/UserProvider";
 
 import { Button } from "@/components/ui/button";
-
+require('dotenv').config();
 import {
   Card,
   CardContent,
@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 
 export default function SignUpForm() {
 
-
+  const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -46,7 +46,7 @@ export default function SignUpForm() {
     try {
 
       console.log(state.user);
-      const response = await fetch("http://localhost:4000/api/v1/auth/login", {
+      const response = await fetch(`${apiUrl}/api/v1/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

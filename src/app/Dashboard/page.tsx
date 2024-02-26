@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select"
 import Navbar from "@/components/ui/Navbar"
 
+require('dotenv').config();
 import {
   Card,
   CardContent,
@@ -42,10 +43,16 @@ import Link from "next/link";
   
 
   const Home2=()=>{
+    // Assuming you are using Node.js
+
+
+// Your API URL
+
+const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
 
     const [addInput,setAdd]=useState(false);
     const { state, dispatch } = useUserContext();
-    const user=state.user;
+    const user=state?.user;
     useEffect(()=>{
       console.log(state);
 
@@ -58,7 +65,7 @@ import Link from "next/link";
   
     const fetchUserForms = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/v1/form/userForms?userId=${String(user._id)}`, {
+        const response = await fetch(`${apiUrl}/api/v1/form/userForms?userId=${String(user?._id)}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -92,7 +99,7 @@ import Link from "next/link";
   
 const fetchFormDetails = async (formId: string) => {
   try {
-    const response = await fetch(`http://localhost:4000/api/v1/form/FormDetail?formId=${formId}`);
+    const response = await fetch(`${apiUrl}/api/v1/form/FormDetail?formId=${formId}`);
 
     if (response.ok) {
       setInputs([]);
@@ -122,7 +129,7 @@ const fetchFormDetails = async (formId: string) => {
 
     const fetchInputDetails = async (inputId:string) => {
       try {
-        const response = await fetch(`http://localhost:4000/api/v1/form/getINputDetails?inputId=${inputId}`);
+        const response = await fetch(`${apiUrl}/api/v1/form/getINputDetails?inputId=${inputId}`);
     
         if (response.ok) {
           const data = await response.json();
@@ -139,7 +146,7 @@ const fetchFormDetails = async (formId: string) => {
 
     const fetchResponseDetails = async (responseId:string) => {
       try {
-        const response = await fetch(`http://localhost:4000/api/v1/form/getResponseDetails?responseId=${responseId}`);
+        const response = await fetch(`${apiUrl}/api/v1/form/getResponseDetails?responseId=${responseId}`);
     
         if (response.ok) {
           const data = await response.json();
@@ -169,13 +176,13 @@ const fetchFormDetails = async (formId: string) => {
     const [addedInputs, setAddedInputs] = useState<InputData[]>([]);
   const [formData, setFormData] = useState({
     title: "",
-    user:state.user._id,
+    user:state?.user?._id,
   });
   const [inputData, setInput] = useState({
     formId:"",
     field: "",
-    type:"",
-    userId:state.user._id
+    type:"text",
+    userId:state?.user?._id
   
    
     
@@ -189,8 +196,9 @@ const fetchFormDetails = async (formId: string) => {
 
   const handleLogout = async () => {
     try {
+      console.log(apiUrl);
       // Make a request to your server to invalidate the token and perform logout
-      const response = await fetch("http://localhost:4000/api/v1/auth/logout", {
+      const response = await fetch(`${apiUrl}/api/v1/auth/logout`, {
         method: "POST", // or "GET" depending on your server implementation
         headers: {
           "Content-Type": "application/json",
@@ -227,7 +235,7 @@ const fetchFormDetails = async (formId: string) => {
     console.log(inputData);
     try {
 
-      const response = await fetch("http://localhost:4000/api/v1/form/addInput", {
+      const response = await fetch(`${apiUrl}/api/v1/form/addInput`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -262,7 +270,7 @@ const fetchFormDetails = async (formId: string) => {
     console.log(formData);
     try {
 
-      const response = await fetch("http://localhost:4000/api/v1/form/createForm", {
+      const response = await fetch(`${apiUrl}/api/v1/form/createForm`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -294,7 +302,7 @@ return(
      </nav>
      <div className="flex flex-col  flex-wrap h-[100%] items-center justify-around  w-[90%] mx-auto">
     <div className="z-10">
-     <Dialog>
+     <Dialog >
   <DialogTrigger><div className=" bg-white text-black p-4 rounded-lg">Add Form</div></DialogTrigger>
   <DialogContent>
     <DialogHeader>
@@ -330,12 +338,13 @@ return(
         handleInputChange2("field",e.target.value);
       }}  name="field" className=" border-2" type="text"></input>
       <label>Enter the type of response you want</label>
-      <select onChange={(e) => {
+      <select  onChange={(e) => {
   handleInputChange2("type", e.target.value);
 }}>
+  
   <option value="text">Text</option>
-  <option value="radio">Radio</option>
-  <option value="checkbox">Checkbox</option>
+
+  
 </select>
 
 <button className="bg-black text-white p-4 rounded-lg"  onClick={()=>{
