@@ -8,8 +8,9 @@ const FillForm = () => {
 
   const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
   const [searchQuery, setSearchQuery] = useState("");
-  const [formDetails, setFormDetails] = useState(null);
-  const [userResponses, setUserResponses] = useState({});
+  const [formDetails, setFormDetails] = useState<{ title: string, input: any[], _id: string } | null>(null);
+  const [userResponses, setUserResponses] = useState<Record<string, any>>({});
+
   const { state, dispatch } = useUserContext();
   const user=state.user;
   // Function to fetch form details based on search query
@@ -48,11 +49,11 @@ const FillForm = () => {
         });
 
         if (response.ok) {
-          console.log("Responses submitted successfully");
-          // Optionally, you can reset the form or perform other actions
-        } else {
-          console.error("Failed to submit responses. Status:", response.status);
-        }
+        console.log("Responses submitted successfully");
+        // Optionally, you can reset the form or perform other actions
+      } else {
+        console.error("Failed to submit responses. Status:", response.status);
+      }
       }
 
       
@@ -80,7 +81,7 @@ const FillForm = () => {
         <div>
           <h2>{formDetails.title}</h2>
           <form className=" flex flex-col justify-center items-center gap-4 p-4">
-            {formDetails.input && formDetails.input.map((input) => (
+            {formDetails.input && formDetails.input.map((input: { _id: string, field: string, type: string, options?: string[] }) => (
               <div key={input._id}>
                 <label>{input.field}</label>
                 {input.type === "text" && (
@@ -122,26 +123,26 @@ const FillForm = () => {
                 {input.type === "checkbox" && input.options && input.options.length > 0 && (
                   /* Render checkbox options based on your data structure */
                   <div>
-                    {input.options.map((option) => (
-                      <label key={option}>
-                        <input
-                          type="checkbox"
-                          name={input.field}
-                          value={option}
-                          checked={userResponses[input.field]?.includes(option) || false}
-                          onChange={(e) => {
-                            const isChecked = e.target.checked;
-                            setUserResponses((prevResponses) => ({
-                              ...prevResponses,
-                              [input.field]: isChecked
-                                ? [...(prevResponses[input.field] || []), option]
-                                : (prevResponses[input.field] || []).filter((val) => val !== option),
-                            }));
-                          }}
-                        />
-                        {option}
-                      </label>
-                    ))}
+                     {input.options.map((option: string) => (  // Add type annotation for 'option'
+      <label key={option}>
+        <input
+          type="checkbox"
+          name={input.field}
+          value={option}
+          checked={userResponses[input.field]?.includes(option) || false}
+          onChange={(e) => {
+            const isChecked = e.target.checked;
+            setUserResponses((prevResponses) => ({
+              ...prevResponses,
+              [input.field]: isChecked
+                ? [...(prevResponses[input.field] || []), option]
+                : (prevResponses[input.field] || []).filter((val: string) => val !== option), // Add type annotation for 'val'
+            }));
+          }}
+        />
+        {option}
+      </label>
+    ))}
                   </div>
                 )}
               </div>
