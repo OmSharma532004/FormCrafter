@@ -11,7 +11,7 @@ const MyPage = () => {
     // Your component JSX goes here
     return (
       <div>
-        {/* Your page content */}
+     Hi
       </div>
     );
   };
