@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
+
+interface FormInput {
+  field: string;
+  type: string; // Adjust the type according to your actual data type
+  // Add other properties as needed
+}
+
 interface FormComponentProps {
-    formId: string; // Assuming formId is a string, update it according to your data type
-  }
+  formId: string;
+}
+
+
   
   const FormComponent: React.FC<FormComponentProps> = ({ formId }) => {
-  const [formInputs, setFormInputs] = useState([]);
+    const [formInputs, setFormInputs] = useState<FormInput[]>([]);
   const [userResponses, setUserResponses] = useState({});
 
   useEffect(() => {
