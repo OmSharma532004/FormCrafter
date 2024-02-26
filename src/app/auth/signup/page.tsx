@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-
+require('dotenv').config();
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,7 @@ export default function SignUpForm() {
     email: "",
     password: "",
   });
-
+  const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
   const handleInputChange = (name:string, value:string) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -46,7 +46,7 @@ export default function SignUpForm() {
   const handleSubmit = async () => {
     console.log(formData);
     try {
-      const response = await fetch("http://localhost:4000/api/v1/auth/signup", {
+      const response = await fetch(`${apiUrl}/api/v1/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

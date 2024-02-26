@@ -3,8 +3,10 @@ import React, { useState, useEffect } from "react";
 import { UserProvider, useUserContext } from "@/lib/contextapi/UserProvider";
 import Navbar from "@/components/ui/Navbar";
 import Link from "next/link";
-
+require('dotenv').config();
 const FillForm = () => {
+
+  const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
   const [searchQuery, setSearchQuery] = useState("");
   const [formDetails, setFormDetails] = useState(null);
   const [userResponses, setUserResponses] = useState({});
@@ -13,7 +15,7 @@ const FillForm = () => {
   // Function to fetch form details based on search query
   const fetchFormDetails = async () => {
     try {
-      const response = await fetch(`http://localhost:4000/api/v1/form/searchForm?formName=${searchQuery}`);
+      const response = await fetch(`${apiUrl}/api/v1/form/searchForm?formName=${searchQuery}`);
       if (response.ok) {
         const data = await response.json();
        
@@ -32,7 +34,7 @@ const FillForm = () => {
   // Function to handle form submission
   const handleSubmit = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/v1/form/addResponse", {
+      const response = await fetch(`${apiUrl}/api/v1/form/addResponse`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
