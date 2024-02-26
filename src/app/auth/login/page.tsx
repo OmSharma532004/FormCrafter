@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { UserProvider, useUserContext } from "@/lib/contextapi/UserProvider";
 
 import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
@@ -14,14 +16,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+
 export default function SignUpForm() {
+
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-  const [user,setUser]=useState("");
+  const { state, dispatch } = useUserContext();
+    
+    const setUser = (user:string) => {
+      
+      dispatch({ type: "SET_USER", payload: user });
+      console.log(state);
+    };
 
-  const handleInputChange = (name, value) => {
+
+  const handleInputChange = (name:string, value:string) => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -30,9 +42,10 @@ export default function SignUpForm() {
 
   const handleSubmit = async () => {
     
-    
+    console.log(state._id);
     try {
 
+      console.log(state.user);
       const response = await fetch("http://localhost:4000/api/v1/auth/login", {
         method: "POST",
         headers: {
@@ -45,7 +58,12 @@ export default function SignUpForm() {
         const data = await response.json();
         console.log("Login successful. Received data:", data);
         setUser(data.user);
-        console.log(user);
+        console.log(state.user)
+        localStorage.setItem("token", JSON.stringify(data.token))
+        localStorage.setItem("user", JSON.stringify(data.user))
+        window.location.href = "/Dashboard";
+        
+      
       } else {
         console.error("Login failed. Status:", response.status);
       }
@@ -55,12 +73,14 @@ export default function SignUpForm() {
   };
 
   return (
-    <div className="relative flex flex-col justify-center items-center min-h-screen overflow-hidden">
-      <div className="w-full m-auto bg-white lg:max-w-lg">
+    <div className="relative flex flex-col bg-black text-white justify-center items-center min-h-screen overflow-hidden">
+        <h1 className=" text-4xl mt-5 font-bold"> Welcome To Survey Form</h1>
+      <div className="w-full  m-auto h-full text-black bg-white lg:max-w-lg">
+       
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">
-              Create an account
+           LOG IN
             </CardTitle>
             <CardDescription className="text-center">
               Enter your email and password to sign up
@@ -73,7 +93,7 @@ export default function SignUpForm() {
                 id="email"
                 type="email"
                 placeholder=""
-                onClick={(e) => handleInputChange("email", e.target.value)}
+                onChange={(e) => handleInputChange("email", e.target.value)}
               />
             </div>
             <div className="grid gap-2">
@@ -81,14 +101,14 @@ export default function SignUpForm() {
               <Input
                 id="password"
                 type="password"
-                onClick={(e) => handleInputChange("password", e.target.value)}
+                onChange={(e) => handleInputChange("password", e.target.value)}
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <Link href={""}><Button  className="w-full" onClick={handleSubmit}>
+            <Button  className="w-full" onClick={handleSubmit}>
              login
-            </Button></Link>
+            </Button>
             <p className="mt-2 text-xs text-center text-gray-700">
               need to have an account?{" "}
               <Link href="/auth/signup">

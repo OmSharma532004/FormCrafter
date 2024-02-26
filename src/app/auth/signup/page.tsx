@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import axios from "axios";
+
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,31 +20,33 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import { UserProvider, useUserContext } from "@/lib/contextapi/UserProvider";
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
     password: "",
-    type: "",
   });
 
-  const handleInputChange = (name, value) => {
+  const handleInputChange = (name:string, value:string) => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
-
-  const handleTypeChange = (selectedType) => {
-    console.log("called :", selectedType);
-    handleInputChange("type", selectedType);
+  const { state, dispatch } = useUserContext();
+    
+  const setUser = (user:string) => {
+    
+    dispatch({ type: "SET_USER", payload: user });
+    console.log(state);
   };
 
   const handleSubmit = async () => {
     console.log(formData);
     try {
-      const response = await fetch("/api/user/createuser", {
+      const response = await fetch("http://localhost:4000/api/v1/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,6 +57,18 @@ export default function SignUpForm() {
       if (response.ok) {
         const data = await response.json();
         console.log("User registered successfully:", data.user);
+        // Optionally, you can clear the form data after successful registration
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+        });
+        setUser(data.user);
+        console.log(state.user)
+        localStorage.setItem("token", JSON.stringify(data.token))
+        localStorage.setItem("user", JSON.stringify(data.user))
+        window.location.href = "/Dashboard";
       } else {
         const errorData = await response.json();
         console.error("Error registering user:", errorData.message);
@@ -65,25 +79,37 @@ export default function SignUpForm() {
   };
 
   return (
-    <div className="relative flex flex-col justify-center items-center min-h-screen overflow-hidden">
-      <div className="w-full m-auto bg-white lg:max-w-lg">
+    <div className="relative flex flex-col justify-center items-center bg-black text-white min-h-screen overflow-hidden">
+              <h1 className=" text-4xl mt-5 font-bold"> Welcome To Survey Form</h1>
+      <div className="w-full m-auto bg-white text-black lg:max-w-lg">
         <Card>
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">
               Create an account
             </CardTitle>
             <CardDescription className="text-center">
-              Enter your email and password to sign up
+              Enter your details to sign up
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="firstName">First Name</Label>
               <Input
-                id="name"
+                id="firstName"
                 type="text"
                 placeholder=""
-                onChange={(e) => handleInputChange("name", e.target.value)}
+                onChange={(e) => handleInputChange("firstName", e.target.value)}
+                value={formData.firstName}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                type="text"
+                placeholder=""
+                onChange={(e) => handleInputChange("lastName", e.target.value)}
+                value={formData.lastName}
               />
             </div>
             <div className="grid gap-2">
@@ -92,7 +118,8 @@ export default function SignUpForm() {
                 id="email"
                 type="email"
                 placeholder=""
-                onClick={(e) => handleInputChange("email", e.target.value)}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                value={formData.email}
               />
             </div>
             <div className="grid gap-2">
@@ -100,32 +127,19 @@ export default function SignUpForm() {
               <Input
                 id="password"
                 type="password"
-                onClick={(e) => handleInputChange("password", e.target.value)}
+                onChange={(e) => handleInputChange("password", e.target.value)}
+                value={formData.password}
               />
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="type">Type</Label>
-              <Select
-                onValueChange={(value) => handleTypeChange(value)}
-                defaultValue={formData.type}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectItem value="producer">Producer</SelectItem>
-                  <SelectItem value="retailer">Retailer</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col">
             <Button className="w-full" onClick={handleSubmit}>
               Sign Up
             </Button>
+            {/* Optionally, add a link to your login page */}
             <p className="mt-2 text-xs text-center text-gray-700">
               Already have an account?{" "}
-              <span className=" text-blue-600 hover:underline">Sign In</span>
+              <span className="text-blue-600 hover:underline">Sign In</span>
             </p>
           </CardFooter>
         </Card>
