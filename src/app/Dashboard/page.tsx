@@ -49,6 +49,16 @@ import Link from "next/link";
 // Your API URL
 
 const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
+interface UserForm {
+  _id: string;
+  title: string;
+  // other properties...
+}
+interface selected {
+
+  title: string;
+  // other properties...
+}
 
     const [addInput,setAdd]=useState(false);
     const { state, dispatch } = useUserContext();
@@ -58,8 +68,8 @@ const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
 
     },[])
     const [isFormDetailsDialogOpen, setFormDetailsDialogOpen] = useState(false);
-    const [userForms, setUserForms] = useState([]);
-    const [selectedForm, setSelectedForm] = useState(null);
+    const [userForms, setUserForms] = useState<UserForm[]>([]);
+    const [selectedForm, setSelectedForm] = useState<selected>();
   
  
   
