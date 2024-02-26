@@ -84,15 +84,16 @@ const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
       }
     };
     
-    const [response2 , setResponse]=useState([])
-  const[inputs2,setInputs]=useState([]);
+    const [response2, setResponse] = useState<{ response: { Usera: string, answer: Record<string, string> } }[]>([]);
+    const [inputs2, setInputs] = useState<{ inputs: { field: string, type: string }[] }[]>([]);
+  
     // Trigger the fetchUserForms function when the component mounts or when the user state changes
     useEffect(() => {
       if (user) {
         fetchUserForms();
       }
     }, [user]);
-    const handleFormClick = (formId) => {
+    const handleFormClick = (formId:string) => {
       // Fetch and display form details when a form is clicked
       fetchFormDetails(formId);
     };
@@ -111,12 +112,12 @@ const fetchFormDetails = async (formId: string) => {
       setFormDetailsDialogOpen(true);
 
       // Fetch and display input details for each input
-      data.form.input.forEach((inputId) => {
+      data.form.input.forEach((inputId:string) => {
         fetchInputDetails(inputId);
       });
 
       // Fetch and display response details for each response
-      data.form.response.forEach((responseId) => {
+      data.form.response.forEach((responseId:string) => {
         fetchResponseDetails(responseId);
       });
     } else {
@@ -402,7 +403,7 @@ return(
         <div onDoubleClick={()=>{
           setFormDetailsDialogOpen(false);
         }}>
-           <Dialog open={isFormDetailsDialogOpen} onClose={() => setFormDetailsDialogOpen(false)}>
+           <Dialog open={isFormDetailsDialogOpen} >
   <DialogContent>
     <DialogHeader>
       <DialogTitle>Form Details  </DialogTitle>

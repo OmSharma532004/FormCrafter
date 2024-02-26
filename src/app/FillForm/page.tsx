@@ -34,24 +34,28 @@ const FillForm = () => {
   // Function to handle form submission
   const handleSubmit = async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/v1/form/addResponse`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          formId: formDetails._id,
-          answer: userResponses,
-          userAnswerId:user,
-        }),
-      });
+      if(formDetails){
+        const response = await fetch(`${apiUrl}/api/v1/form/addResponse`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            formId: formDetails._id,
+            answer: userResponses,
+            userAnswerId:user,
+          }),
+        });
 
-      if (response.ok) {
-        console.log("Responses submitted successfully");
-        // Optionally, you can reset the form or perform other actions
-      } else {
-        console.error("Failed to submit responses. Status:", response.status);
+        if (response.ok) {
+          console.log("Responses submitted successfully");
+          // Optionally, you can reset the form or perform other actions
+        } else {
+          console.error("Failed to submit responses. Status:", response.status);
+        }
       }
+
+      
     } catch (error) {
       console.error("Failed to submit responses:", error);
     }
