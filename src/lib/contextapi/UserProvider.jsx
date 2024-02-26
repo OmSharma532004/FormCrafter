@@ -3,7 +3,7 @@ import React, { createContext, useContext, useReducer } from "react";
 
 // Define initial state and reducer
 const initialState = {
-  user : localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null,
+  user: typeof window !== 'undefined' ? (localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null) : null,
 };
 
 const userReducer = (state, action) => {
