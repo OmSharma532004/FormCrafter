@@ -70,6 +70,7 @@ interface selected {
     const [isFormDetailsDialogOpen, setFormDetailsDialogOpen] = useState(false);
     const [userForms, setUserForms] = useState<UserForm[]>([]);
     const [selectedForm, setSelectedForm] = useState<selected>();
+    const [formId, setFormId] = useState("");
   
  
   
@@ -106,6 +107,7 @@ interface selected {
     const handleFormClick = (formId:string) => {
       // Fetch and display form details when a form is clicked
       fetchFormDetails(formId);
+         console.log("id of the form is" ,formId);
     };
   
 const fetchFormDetails = async (formId: string) => {
@@ -119,6 +121,8 @@ const fetchFormDetails = async (formId: string) => {
       console.log(data);
       setSelectedForm(data.form);
       console.log(selectedForm);
+      setFormId(data.form._id); 
+      console.log("id of the form is" ,formId);
       setFormDetailsDialogOpen(true);
 
       // Fetch and display input details for each input
@@ -268,7 +272,26 @@ const fetchFormDetails = async (formId: string) => {
       console.error("Failed", error);
     }
   };
+  const handleDelete = async (formId:string) => {
+    try {
+      const response = await fetch(`${apiUrl}/api/v1/form/deleteForm?formId=${formId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Form Deleted Successfully", data);
+        fetchUserForms();
+      } else {
+        console.error("failed. Status:", response.status);
+      }
+    } catch (error) {
+      console.error("Failed", error);
+    }
+  }
 
   const handleInputChange = (name:string, value:string) => {
     setFormData((prevData) => ({
@@ -311,8 +334,8 @@ return(
      <nav className="w-[80%]  mx-auto">
      <Navbar user={state.user} handleLogout={handleLogout}/>
      </nav>
-     <div className="flex flex-col  flex-wrap h-[100%] items-center justify-around  w-[90%] mx-auto">
-    <div className="z-10">
+     <div className="flex flex-col   h-[100%] items-center justify-center  w-[100%] ">
+    <div className="z-10 mx-auto flex flex-col   h-[100%] items-center justify-around  w-[100%] gap-2">
      <Dialog >
   <DialogTrigger><div className=" bg-white text-black p-4 rounded-lg">Add Form</div></DialogTrigger>
   <DialogContent>
@@ -396,17 +419,24 @@ return(
     </DialogHeader>
   </DialogContent>
 </Dialog>
-
-<div className="flex flex-col gap-4 items-center text-white">
-          <h2 className="text-xl">Your Forms:</h2>
+<h2 className="text-xl ">Your Forms:</h2>
+<div className="flex flex-row w-[70%] flex-wrap justify-center gap-4 items-center text-white">
+        
           {userForms.map((form) => (
             <div
               key={form._id}
-              className="cursor-pointer text-blue-500 hover:underline"
-              onClick={() => handleFormClick(form._id)}
+              className="cursor-pointer hover:bg-black flex-col hover:text-white transition-all duration-200 bg-white text-black w-[100px] h-[100px] flex items-center justify-center hover:underline"
+            
+              
             >
-              {form.title}
+              <p   onClick={() => handleFormClick(form._id)}>{form.title}</p>
+              <div onClick={ ()=>{
+                handleDelete(form._id);
+                
+              }}> delete </div>
+      
             </div>
+            
           ))}
         </div>
    <div className="bg-white text-black">     {selectedForm ?(
@@ -471,6 +501,30 @@ return(
 
   {/* Add more form details as needed */}
 </div>
+<Dialog> 
+  <DialogTrigger>
+    <div className="bg-black text-white p-4 rounded-lg">Share</div>
+  </DialogTrigger>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Share</DialogTitle>
+    </DialogHeader>
+    <DialogDescription className=" flex flex-col items-center justify-center gap-4">
+      <p>Copy the link to share the form with others.</p>
+      
+      <p className=" ">To fill the form -: <Link className="text-blue-500" href={{ pathname: `/SubmitForm`,
+    query: {
+      formId: formId,
+    },}}>Click Here</Link></p>
+    <p><b className=" text-blue-500">`http://localhost:3000/SubmitForm?formId=${formId}`</b>  <button>
+      <button onClick={() => {
+        navigator.clipboard.writeText(`http://localhost:3000/SubmitForm?formId=${formId}`);
+      }}>Copy URL</button>
+      </button></p>
+    </DialogDescription>
+  </DialogContent>
+</Dialog>
+
 <h1>Double click to close</h1>
   </DialogContent></Dialog>
           </div>
