@@ -28,7 +28,17 @@ const Navbar: React.FC<NavbarProps> = ({ user, handleLogout }) => {
   return (
     <nav className="w-[100%] p-4 bg-white  mx-auto">
       <ul className="flex flex-row flex-wrap items-center justify-between">
-        <Link href={"/Dashboard"}>Home</Link>
+       {
+        user ? (
+          <>
+          <Link href={"/Dashboard"}>Home</Link>
+          </>
+        ):(
+          <>
+          <Link href={"/"}>Home</Link>
+          </>
+        )
+       }
       
         {user ? (
           <>

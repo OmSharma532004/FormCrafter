@@ -207,9 +207,11 @@ const SubmitForm = () => {
         </div>
       )}
               </>):(<>
-              <h1>You need to Login before submitting this Form</h1>
-              <button onClick={handleLogin}>Login</button>
+              <div className=" bg-white p-4 flex-col items-center justify-center flex">
+              <h1 className=" text-3xl bg-white text-black">You need to Login before submitting this Form</h1>
+              <button className=" bg-black text-white rounded-xl text-xl p-4" onClick={handleLogin}>Login</button>
               
+              </div>
               </>)
             }
            

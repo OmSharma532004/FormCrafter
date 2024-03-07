@@ -175,9 +175,6 @@ const MyPage = () => {
     <div className="wrap">
       <div className="footer-list">
         <a href="#" className="footer-link">
-          Email
-        </a>
-        <a href="#" className="footer-link">
           Instagram
         </a>
         <a href="#" className="footer-link">
@@ -186,9 +183,7 @@ const MyPage = () => {
         <a href="#" className="footer-link">
           Twitter
         </a>
-        <a href="/image-license-info" className="footer-link">
-          Image License Info
-        </a>
+        
       </div>
     </div>
   </div>

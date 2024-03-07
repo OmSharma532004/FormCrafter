@@ -518,12 +518,12 @@ setNoOfInputs(e.target.value);
           setFormDetailsDialogOpen(false);
         }}>
            <Dialog  open={isFormDetailsDialogOpen} >
-  <DialogContent className=" overflow-scroll h-[80%]">
+  <DialogContent className=" overflow-scroll h-[100%]">
     <DialogHeader>
-      <DialogTitle>Form Details  </DialogTitle>
+     
     </DialogHeader>
     {/* Display all details of the form here */}
-    <div className="bg-white text-black p-4 rounded-lg">
+    <div className=" flex flex-col items-center justify-center bg-white text-black p-4 rounded-lg">
   <h2 className="text-xl text-black">Form Details:</h2>
   <p>Title: {selectedForm ? selectedForm.title : "N/A"}</p>
   <h3>Form:</h3>
@@ -568,9 +568,11 @@ setNoOfInputs(e.target.value);
 
 
 
-  <h3>Responses:</h3>
-  {response2.map((responseData, index) => (
-  <div className="flex  max-h-[200px]  items-center justify-center" key={index}>
+<div className=" flex flex-col items-center justify-center">
+<h3 className=" text-black text-xl">Responses:</h3>
+<div>
+{response2.map((responseData, index) => (
+  <div className="flex flex-col    items-center justify-center" key={index}>
    <div className="">
    <p className=" bg-black  text-white p-4">User: {responseData.response.Usera};</p>
     {responseData.response.answer && (
@@ -586,6 +588,8 @@ setNoOfInputs(e.target.value);
    </div>
   </div>
 ))}
+</div>
+</div>
 
 
 
