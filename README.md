@@ -1,6 +1,14 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+FormCrafter
+
+"Empower your creativity, share your thoughts, and connect with others effortlessly. FormCrafter, built with Next.js, Node.js, MongoDB, Express, Tailwind CSS, and the versatile Context API, enables you to craft and seamlessly transfer customizable forms—your imagination, your design, your data. Embrace the simplicity, share the experience, and let FormCrafter redefine your form-building journey."
+
+Feel free to customize this quote to better fit the tone and style of your project. You may want to add more details about specific features, how to run the project locally, and any other important information users or contributors should know.
+
+
 ## Getting Started
+
 
 First, run the development server:
 
