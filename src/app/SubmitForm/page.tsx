@@ -179,7 +179,8 @@ const SubmitForm = () => {
                 {input.type === "checkbox" &&  (
                   /* Render checkbox options based on your data structure */
                 <>
-                <input type="checkbox" onChange={(e)=>{
+              
+                <input   type="checkbox"  onChange={(e)=>{
                   if(e.target.checked){
                     setUserResponses((prevResponses) => ({
                       ...prevResponses,

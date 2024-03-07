@@ -5,6 +5,7 @@ import { UserProvider, useUserContext } from "@/lib/contextapi/UserProvider";
 import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
+import {useLoading} from "@/lib/contextapi/loading";
 require('dotenv').config();
 import {
   Card,
@@ -19,6 +20,7 @@ import { Label } from "@/components/ui/label";
 
 
 export default function SignInForm() {
+  const { showLoadingToast, hideLoadingToast } = useLoading();
   const { toast } = useToast();
   const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
   const [formData, setFormData] = useState({
@@ -42,7 +44,7 @@ export default function SignInForm() {
   };
 
   const handleSubmit = async () => {
-    
+    showLoadingToast();
     console.log(state._id);
     try {
 
@@ -60,6 +62,7 @@ export default function SignInForm() {
         console.log("Login successful. Received data:", data);
         setUser(data.user);
         console.log(state.user)
+        hideLoadingToast();
         toast({
           title: "Success",
           description: "Login successful",
