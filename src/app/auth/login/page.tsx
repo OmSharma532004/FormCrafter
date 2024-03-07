@@ -2,8 +2,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { UserProvider, useUserContext } from "@/lib/contextapi/UserProvider";
-
+import { useToast } from "@/components/ui/use-toast"
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/router";
 require('dotenv').config();
 import {
   Card,
@@ -17,15 +18,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 
-export default function SignUpForm() {
-
+export default function SignInForm() {
+  const { toast } = useToast();
   const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const { state, dispatch } = useUserContext();
-    
+
     const setUser = (user:string) => {
       
       dispatch({ type: "SET_USER", payload: user });
@@ -59,16 +60,36 @@ export default function SignUpForm() {
         console.log("Login successful. Received data:", data);
         setUser(data.user);
         console.log(state.user)
+        toast({
+          title: "Success",
+          description: "Login successful",
+        })
         localStorage.setItem("token", JSON.stringify(data.token))
         localStorage.setItem("user", JSON.stringify(data.user))
-        window.location.href = "/Dashboard";
-        
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const formIdQuery = urlSearchParams.get("formId");
+  
+        // Construct the new redirect URL with the formId if it exists
+        const redirectPath = formIdQuery ? `/SubmitForm?formId=${formIdQuery}` : "/Dashboard";
+  
+        // Redirect to the specified path
+        window.location.href = redirectPath;
       
       } else {
         console.error("Login failed. Status:", response.status);
+        toast({
+          title: "Error",
+          description: response.statusText || "Login failed",
+          variant: "destructive",
+        })
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error during login:", error);
+      toast({
+        title: "Login failed",
+        description: error.message,
+        variant: "destructive",
+      })
     }
   };
 

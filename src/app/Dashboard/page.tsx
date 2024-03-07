@@ -1,6 +1,7 @@
 "use client"
 import { UserProvider, useUserContext } from "@/lib/contextapi/UserProvider";
 import React, { useEffect, useState } from "react"
+import { MdDelete } from "react-icons/md";
 import {
   Select,
   SelectContent,
@@ -9,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import Navbar from "@/components/ui/Navbar"
+import { useToast } from "@/components/ui/use-toast"
 
 require('dotenv').config();
 import {
@@ -47,7 +49,8 @@ import Link from "next/link";
 
 
 // Your API URL
-
+const { toast } = useToast();
+const [dialogInput, setDialogInput] = useState(false);
 const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
 interface UserForm {
   _id: string;
@@ -59,7 +62,7 @@ interface selected {
   title: string;
   // other properties...
 }
-
+    const [noOfInputs,setNoOfInputs]=useState("0");
     const [addInput,setAdd]=useState(false);
     const { state, dispatch } = useUserContext();
     const user=state?.user;
@@ -96,8 +99,8 @@ interface selected {
     };
     
     const [response2, setResponse] = useState<{ response: { Usera: string, answer: Record<string, string> } }[]>([]);
-    const [inputs2, setInputs] = useState<{ inputs: { field: string, type: string }[] }[]>([]);
-  
+    const [inputs2, setInputs] = useState<{ inputs: { field: string, type: string, options?: string[] }[] }[]>([]);
+
     // Trigger the fetchUserForms function when the component mounts or when the user state changes
     useEffect(() => {
       if (user) {
@@ -109,7 +112,7 @@ interface selected {
       fetchFormDetails(formId);
          console.log("id of the form is" ,formId);
     };
-  
+   
 const fetchFormDetails = async (formId: string) => {
   try {
     const response = await fetch(`${apiUrl}/api/v1/form/FormDetail?formId=${formId}`);
@@ -186,6 +189,7 @@ const fetchFormDetails = async (formId: string) => {
     interface InputData {
       field: string;
       type: string;
+      options?: Array<string>;
     }
 
     const [addedInputs, setAddedInputs] = useState<InputData[]>([]);
@@ -193,20 +197,38 @@ const fetchFormDetails = async (formId: string) => {
     title: "",
     user:state?.user?._id,
   });
-  const [inputData, setInput] = useState({
-    formId:"",
+  const [inputData, setInput] = useState<{
+    formId: string;
+    field: string;
+    type: string;
+    options: string[]; // Specify that options is an array of strings
+    userId?: string;
+  }>({
+    formId: "",
     field: "",
-    type:"text",
-    userId:state?.user?._id
-  
-   
-    
+    type: "text",
+    options: [], // Initialize options as an empty array of strings
+    userId: state?.user?._id,
   });
-  const handleInputChange2 = (name:string, value:string) => {
-    setInput((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  
+  const handleInputChange2 = (name: string, value: string | number) => {
+    setInput((prevData) => {
+      if (name.startsWith("options")) {
+        const optionIndex = Number(name.replace("options", ""));
+        const updatedOptions = [...prevData.options];
+        updatedOptions[optionIndex] = String(value); // Ensure value is a string
+  
+        return {
+          ...prevData,
+          options: updatedOptions,
+        };
+      }
+  
+      return {
+        ...prevData,
+        [name]: value,
+      };
+    });
   };
 
   const handleLogout = async () => {
@@ -317,25 +339,43 @@ const fetchFormDetails = async (formId: string) => {
         console.log("Form Created Successfully", data);
         setInput((prevInputData) => {
           const updatedInputData = { ...prevInputData, formId: data.form._id };
+          setAdd(true);
+          toast({
+            title: "Success",
+            description: "Form Created Successfully",
+          });
           return updatedInputData;
         });
       } else {
         console.error("failed. Status:", response.status);
+        toast({ 
+          title: "Error",
+          description: response.statusText || "Error Creating Form",
+          variant: "destructive",
+        });
       }
 
-    } catch (error) {
+    } catch (error:any) {
       console.error("Failed", error);
+      toast
+      ({
+        title: "Error",
+        description: error.message || "Error Creating Form",
+        variant: "destructive",
+      });
     }
   };
 
 
 return(
-    <div className="w-screen h-screen overflow-hidden min-h-screen bg-black text-white">
-     <nav className="w-[80%]  mx-auto">
+    <div className=" w-screen flex flex-col items-center justify-center h-screen home">
+      <h1 className=" bg-white text-black p-4 rounded-xl text-3xl">FormCrafter</h1>
+      <div className="w-[80%] h-[80%] overflow-scroll  bg-black text-white">
+     <nav className="  mx-auto">
      <Navbar user={state.user} handleLogout={handleLogout}/>
      </nav>
      <div className="flex flex-col   h-[100%] items-center justify-center  w-[100%] ">
-    <div className="z-10 mx-auto flex flex-col   h-[100%] items-center justify-around  w-[100%] gap-2">
+   {state.user?._id?( <div className="z-10 mx-auto flex flex-col   h-[100%] items-center justify-around  w-[100%] gap-2">
      <Dialog >
   <DialogTrigger><div className=" bg-white text-black p-4 rounded-lg">Add Form</div></DialogTrigger>
   <DialogContent>
@@ -350,8 +390,10 @@ return(
       <div className="text-xl flex flex-col gap-4">
         <h1 className=" text-black">{formData.title}</h1>
         
-      <Dialog>
-  <DialogTrigger><div className="bg-black text-white p-4 rounded-lg" >Add Input</div></DialogTrigger>
+      <Dialog open={dialogInput}>
+  <DialogTrigger><div onClick={()=>{
+    setDialogInput(true)
+  }} className="bg-black text-white p-4 rounded-lg" >Add Input</div></DialogTrigger>
   {addedInputs.length > 0 && (
         <div className=" bg-black text-white">
           <h1>Added Inputs:</h1>
@@ -377,12 +419,41 @@ return(
 }}>
   
   <option value="text">Text</option>
+  <option value="radio">radio</option> 
+   <option value="checkbox">checkbox</option>
 
   
 </select>
 
+{
+  inputData.type=="radio"?(<>
+  <label>Enter the no of radio buttons you want</label>
+  <input onChange={(e)=>{
+setNoOfInputs(e.target.value);
+  }} name="options" className=" border-2" type="number"></input>
+  {Array.from({ length: Number(noOfInputs) }).map((_, index) => (
+    <div key={index}>
+      <label>Enter the label</label>
+      <input
+        onChange={(e) => {
+          handleInputChange2(`options${index}`, e.target.value);
+        }}
+        name={`options${index}`}
+        className="border-2"
+        type="text"
+      ></input>
+     
+    </div>
+  ))}
+
+  
+  </>):(<></>)
+
+}
+
 <button className="bg-black text-white p-4 rounded-lg"  onClick={()=>{
   handleSubmit2();
+  setDialogInput(false);
  
 }}>
   
@@ -406,7 +477,7 @@ return(
         className="text-black border-4 " type="text"></input>
         <button onClick={()=>{
           handleSubmit();
-          setAdd(true);
+       
         }} className="bg-black text-white rounded-xl p-4" >Done</button>
 
        </div></>)
@@ -423,37 +494,40 @@ return(
 <div className="flex flex-row w-[70%] flex-wrap justify-center gap-4 items-center text-white">
         
           {userForms.map((form) => (
-            <div
+            <div className=" flex gap-4 flex-col items-center justify-center">
+              <div
               key={form._id}
               className="cursor-pointer hover:bg-black flex-col hover:text-white transition-all duration-200 bg-white text-black w-[100px] h-[100px] flex items-center justify-center hover:underline"
             
               
             >
               <p   onClick={() => handleFormClick(form._id)}>{form.title}</p>
-              <div onClick={ ()=>{
+             
+      
+            </div>
+            <div onClick={ ()=>{
                 handleDelete(form._id);
                 
-              }}> delete </div>
-      
+              }}> <MdDelete style={{fontSize:"2rem"}} /> </div>
             </div>
             
           ))}
         </div>
-   <div className="bg-white text-black">     {selectedForm ?(
-        <div onDoubleClick={()=>{
+   <div className="bg-white text-black ">     {selectedForm ?(
+        <div className=" overflow-scroll" onDoubleClick={()=>{
           setFormDetailsDialogOpen(false);
         }}>
-           <Dialog open={isFormDetailsDialogOpen} >
-  <DialogContent>
+           <Dialog  open={isFormDetailsDialogOpen} >
+  <DialogContent className=" overflow-scroll h-[80%]">
     <DialogHeader>
       <DialogTitle>Form Details  </DialogTitle>
     </DialogHeader>
     {/* Display all details of the form here */}
     <div className="bg-white text-black p-4 rounded-lg">
-  <h2 className="text-xl">Form Details:</h2>
+  <h2 className="text-xl text-black">Form Details:</h2>
   <p>Title: {selectedForm ? selectedForm.title : "N/A"}</p>
   <h3>Form:</h3>
-  <div className="bg-black text-white p-4">
+  <div className="bg-black flex flex-col flex-wrap overflow-scroll justify-center items-center text-white p-4">
   {inputs2.map((form, formIndex) => (
   <div key={formIndex}>
   
@@ -462,13 +536,27 @@ return(
         <div className=" flex gap-4 items-center justify-center  mt-3" key={index}>
           <label>{inputData.field}</label>
           {inputData.type === 'text' && (
-            <input type="text" />
+            <input className="text-black" type="text" />
           )}
           {inputData.type === 'radio' && (
-            <input type="radio" />
+        <>
+        {
+          inputData.options && inputData.options.length > 0 && (
+            <div>
+              {inputData.options.map((option) => (
+                <label key={option}>
+                  <input className="text-black" type="radio" />
+                  {option}
+                </label>
+              ))}
+            </div>
+          )
+        }
+        </>
+            
           )}
           {inputData.type === 'checkbox' && (
-            <input type="checkbox" />
+            <input className="text-black" type="checkbox" />
           )}
           {/* Add more input types as needed */}
         </div>
@@ -482,8 +570,9 @@ return(
 
   <h3>Responses:</h3>
   {response2.map((responseData, index) => (
-  <div key={index}>
-    <p className=" bg-black text-white p-4">User: {responseData.response.Usera};</p>
+  <div className="flex  max-h-[200px]  items-center justify-center" key={index}>
+   <div className="">
+   <p className=" bg-black  text-white p-4">User: {responseData.response.Usera};</p>
     {responseData.response.answer && (
       <div>
         <h3>Answer:</h3>
@@ -494,6 +583,7 @@ return(
         ))}
       </div>
     )}
+   </div>
   </div>
 ))}
 
@@ -516,43 +606,30 @@ return(
     query: {
       formId: formId,
     },}}>Click Here</Link></p>
-    <p><b className=" text-blue-500">`http://localhost:3000/SubmitForm?formId=${formId}`</b>  <button>
+    <p><b className=" text-blue-500">`https://survey-form2-seven.vercel.app/SubmitForm?formId=${formId}`</b>  <button>
       <button onClick={() => {
-        navigator.clipboard.writeText(`http://localhost:3000/SubmitForm?formId=${formId}`);
+        navigator.clipboard.writeText(`https://survey-form2-seven.vercel.app/SubmitForm?formId=${formId}`);
       }}>Copy URL</button>
       </button></p>
     </DialogDescription>
   </DialogContent>
 </Dialog>
 
-<h1>Double click to close</h1>
+<h1 className=" text-black text-lg">Double click to close</h1>
   </DialogContent></Dialog>
           </div>
         ):(<></>)}</div>
      
 
-     </div>
-     {/* <div>
-     <Drawer>
-  <DrawerTrigger>Open</DrawerTrigger>
-  <DrawerContent>
-    <DrawerHeader>
-      <DrawerTitle>Are you absolutely sure?</DrawerTitle>
-      <DrawerDescription>This action cannot be undone.</DrawerDescription>
-    </DrawerHeader>
-    <DrawerFooter>
-      <Button>Submit</Button>
-      <DrawerClose>
-        <Button variant="outline">Cancel</Button>
-      </DrawerClose>
-    </DrawerFooter>
-  </DrawerContent>
-</Drawer>
-
-     </div> */}
+     </div>):(<><div className=" flex gap-4 flex-col items-center justify-center">
+      <p>Login First to Visit Dashboard and create Forms</p>
+     <button className=" p-4 rounded-xl bg-white text-black "> <Link href="/auth/login">Login</Link></button>
+      </div></>)}
+    
 
 
      </div>
+    </div>
     </div>
 )
 

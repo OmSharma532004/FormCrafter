@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 require('dotenv').config();
+import { useToast } from "@/components/ui/use-toast"
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +29,7 @@ export default function SignUpForm() {
     email: "",
     password: "",
   });
+  const { toast } = useToast();
   const apiUrl = process.env.NEXT_PUBLIC_REACT_APP_API_URL;
   const handleInputChange = (name:string, value:string) => {
     setFormData((prevData) => ({
@@ -65,16 +67,32 @@ export default function SignUpForm() {
           password: "",
         });
         setUser(data.user);
+        toast({
+          title: "Success",
+          description: "User registered successfully"
+          
+        });
         console.log(state.user)
         localStorage.setItem("token", JSON.stringify(data.token))
         localStorage.setItem("user", JSON.stringify(data.user))
         window.location.href = "/Dashboard";
+
       } else {
         const errorData = await response.json();
         console.error("Error registering user:", errorData.message);
+        toast({
+          title: "Error",
+          description: errorData.message || "Error registering user",
+          variant: "destructive",
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error registering user:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Error registering user",
+        variant: "destructive",
+      });
     }
   };
 
