@@ -10,45 +10,7 @@ const MyPage = () => {
     // Your component JSX goes here
     return (
       <div>
-         <Head>
-        <style>{`.wf-force-outline-none[tabindex="-1"]:focus{outline:none;}`}</style>
-        <meta charSet="utf-8" />
-        <title>Landing page</title>
-        <link
-          href="https://assets-global.website-files.com/65e472c38840a2ba61b0df94/css/oms-typeform-website.webflow.cb372eb3a.css"
-          rel="stylesheet"
-          type="text/css"
-        />
-        <link href="https://fonts.googleapis.com" rel="preconnect" />
-        <link href="https://fonts.gstatic.com" rel="preconnect" crossOrigin="anonymous" />
-        <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js" type="text/javascript" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Gothic+A1:300,regular,500,600,700,800"
-          media="all"
-        />
-        <script
-          type="text/javascript"
-          dangerouslySetInnerHTML={{
-            __html: `
-              WebFont.load({
-                google: {
-                  families: ["Gothic A1:300,regular,500,600,700,800"]
-                }
-              });
-            `,
-          }}
-        />
-        <script
-          type="text/javascript"
-          dangerouslySetInnerHTML={{
-            __html: `
-              !function(o,c){var n=c.documentElement,t=" w-mod-";n.className+=t+"js",("ontouchstart"in o||o.DocumentTouch&&c instanceof DocumentTouch)&&(n.className+=t+"touch")}(window,document);
-            `,
-          }}
-        />
-        <link href="https://assets-global.website-files.com/img/webclip.png" rel="apple-touch-icon" />
-      </Head>
+      
         
 
         <div className="body">

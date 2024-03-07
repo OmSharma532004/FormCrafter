@@ -494,9 +494,9 @@ setNoOfInputs(e.target.value);
 <div className="flex flex-row w-[70%] flex-wrap justify-center gap-4 items-center text-white">
         
           {userForms.map((form) => (
-            <div className=" flex gap-4 flex-col items-center justify-center">
+            <div  key={form._id} className=" flex gap-4 flex-col items-center justify-center">
               <div
-              key={form._id}
+             
               className="cursor-pointer hover:bg-black flex-col hover:text-white transition-all duration-200 bg-white text-black w-[100px] h-[100px] flex items-center justify-center hover:underline"
             
               
